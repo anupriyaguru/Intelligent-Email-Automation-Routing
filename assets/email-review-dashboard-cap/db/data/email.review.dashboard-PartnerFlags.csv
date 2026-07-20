@@ -1,0 +1,4 @@
+ID,bpId,bpName,isPreferred,isAtRisk,hasLegalHold,notes,flaggedBy,flaggedAt
+f0000001-0001-0001-0001-000000000001,BP-10001,Acme Corporation,true,false,false,Preferred customer — key account. Always prioritize.,admin,2024-01-01T00:00:00.000Z
+f0000002-0002-0002-0002-000000000002,BP-10007,MegaRetail Inc,false,true,false,At-risk customer — payment delays in last 3 quarters. Require human review on all write operations.,credit.manager,2024-09-01T00:00:00.000Z
+f0000003-0003-0003-0003-000000000003,BP-99999,Legacy Holdings Corp,false,false,true,Legal hold active — pending litigation. No autonomous responses.,legal.team,2024-11-15T00:00:00.000Z

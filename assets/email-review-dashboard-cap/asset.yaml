@@ -1,0 +1,35 @@
+apiVersion: asset.sap/v1
+kind: Asset
+
+metadata:
+  name: email-review-dashboard-cap
+  version: "1.0.0"
+  description: >
+    Human review dashboard and operations management UI. CAP backend exposes OData services
+    for the review queue, case management, policy rules, and partner configuration.
+    React frontend provides 5 pages: review queue, operations dashboard, policy rules,
+    partner config, and case history.
+
+type: cap-app
+
+components:
+  - name: srv
+    buildPath: .
+    outputPath: gen/srv
+    provides:
+      endpoints:
+        - path: /odata/v4
+          port: 4004
+          protocol: http
+      protocols: [odata-v4, rest]
+    port: 4004
+    requires:
+      - name: hdi-container
+  - name: hdi-deployer
+    type: hdi-deployer
+    buildPath: .
+    outputPath: gen/db
+    requires:
+      - hdi-container
+    custom:
+      lifecycle: init

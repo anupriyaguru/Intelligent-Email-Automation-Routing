@@ -1,0 +1,20 @@
+apiVersion: solution.sap/v1
+kind: Solution
+
+metadata:
+  name: intelligent-email-automation-f52b8
+  version: "1.0.0"
+  description: >
+    Multi-agent intelligent email automation platform. An Orchestrator Agent coordinates
+    five specialist sub-agents (AR, AP, Treasury, Collections, Customer Service) to process
+    10,000+ monthly customer and vendor emails end-to-end, backed by a HANA Cloud knowledge
+    base and a human review dashboard.
+
+assets:
+  - ref: ./assets/email-orchestrator-agent/asset.yaml
+  - ref: ./assets/email-ar-agent/asset.yaml
+  - ref: ./assets/email-ap-agent/asset.yaml
+  - ref: ./assets/email-treasury-agent/asset.yaml
+  - ref: ./assets/email-collections-agent/asset.yaml
+  - ref: ./assets/email-cs-agent/asset.yaml
+  - ref: ./assets/email-review-dashboard-cap/asset.yaml

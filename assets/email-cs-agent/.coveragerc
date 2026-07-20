@@ -1,0 +1,12 @@
+[run]
+source = app
+omit =
+    app/main.py
+    */tests/*
+    */prebuilt_tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if __name__ == .__main__.:

@@ -1,0 +1,56 @@
+apiVersion: asset.sap/v1
+kind: Asset
+
+metadata:
+  name: email-orchestrator-agent
+  version: "1.0.0"
+  description: >
+    Central Orchestrator Agent. Reads all incoming emails from Outlook and Gmail,
+    classifies intent, consults the knowledge base, identifies the business partner,
+    routes to the correct specialist sub-agent, reviews the response, sends the reply,
+    and writes the resolved case to the knowledge base.
+
+type: agent
+
+container:
+  buildPath: .
+  port: 5000
+
+probes:
+  startup:
+    path: /.well-known/agent.json
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 18
+  liveness:
+    path: /.well-known/agent.json
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    path: /.well-known/agent.json
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+requires:
+  - name: email-ar-agent
+    kind: agent
+    ordId: intelligent-email-automation-f52b8:agent:email-ar-agent:v1
+  - name: email-ap-agent
+    kind: agent
+    ordId: intelligent-email-automation-f52b8:agent:email-ap-agent:v1
+  - name: email-treasury-agent
+    kind: agent
+    ordId: intelligent-email-automation-f52b8:agent:email-treasury-agent:v1
+  - name: email-collections-agent
+    kind: agent
+    ordId: intelligent-email-automation-f52b8:agent:email-collections-agent:v1
+  - name: email-cs-agent
+    kind: agent
+    ordId: intelligent-email-automation-f52b8:agent:email-cs-agent:v1
+  - name: email-review-dashboard
+    kind: cap-app
+    ordId: intelligent-email-automation-f52b8:cap-app:email-review-dashboard-cap:v1

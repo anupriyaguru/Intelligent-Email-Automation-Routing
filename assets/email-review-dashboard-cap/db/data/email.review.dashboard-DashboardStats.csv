@@ -1,0 +1,3 @@
+ID,statDate,totalEmails,automatedCount,humanReviewCount,escalatedCount,avgConfidence,byIntent,byAgent
+d0000001-0001-0001-0001-000000000001,2025-01-10,45,32,11,2,0.8240,"{""statement_request"":12,""dispute"":8,""vendor_invoice_status"":10,""payment_confirmation"":7,""overdue_followup"":5,""general_inquiry"":3}","{""email-ar-agent"":20,""email-ap-agent"":17,""email-collections-agent"":5,""email-cs-agent"":3}"
+d0000002-0002-0002-0002-000000000002,2025-01-11,52,38,12,2,0.8510,"{""statement_request"":15,""dispute"":9,""vendor_invoice_status"":12,""payment_confirmation"":8,""overdue_followup"":4,""general_inquiry"":4}","{""email-ar-agent"":24,""email-ap-agent"":20,""email-collections-agent"":4,""email-cs-agent"":4}"

@@ -1,0 +1,34 @@
+apiVersion: asset.sap/v1
+kind: Asset
+
+metadata:
+  name: email-treasury-agent
+  version: "1.0.0"
+  description: >
+    Treasury Sub-Agent. Handles payment terms inquiries, financing questions,
+    and working capital communications via SAP S/4HANA Treasury APIs.
+
+type: agent
+
+container:
+  buildPath: .
+  port: 5000
+
+probes:
+  startup:
+    path: /.well-known/agent.json
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 18
+  liveness:
+    path: /.well-known/agent.json
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    path: /.well-known/agent.json
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
