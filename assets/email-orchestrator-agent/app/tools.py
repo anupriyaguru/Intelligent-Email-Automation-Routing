@@ -202,6 +202,47 @@ async def _flag_review(case_id: str, bp_id: str, sender_email: str, subject: str
                        knowledge_base_context: Optional[str] = None) -> str:
     """Flag case for human review via the CAP review dashboard."""
     logger.info("Case flagged for review | case_id=%s | reason=%s | confidence=%.2f", case_id, flagged_reason, confidence_score)
+
+    # If in testing mode, actually POST to CAP dashboard
+    import os
+    if os.getenv('IBD_TESTING') == '1':
+        try:
+            import httpx
+            review_case = {
+                "case_id": case_id,
+                "bp_id": bp_id,
+                "sender_email": sender_email,
+                "email_subject": subject,
+                "email_body": body,
+                "intent_category": intent_category,
+                "confidence_score": confidence_score,
+                "flagged_reason": flagged_reason,
+                "draft_response": draft_response or "",
+                "ai_classification_rationale": ai_classification_rationale or "",
+                "knowledge_base_context": knowledge_base_context or "{}",
+                "status": "pending_review",
+                "created_at": "2026-07-22T10:00:00Z"
+            }
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "http://localhost:4004/api/review/ReviewCases",
+                    json=review_case,
+                    timeout=10.0
+                )
+
+                if response.status_code in [200, 201]:
+                    logger.info("Successfully created review case in CAP dashboard | case_id=%s", case_id)
+                    return json.dumps({
+                        "status": "success",
+                        "message": f"Review case created in dashboard | case_id={case_id}",
+                        "review_ticket_id": case_id
+                    })
+                else:
+                    logger.warning("Failed to create review case | status=%d | response=%s", response.status_code, response.text[:200])
+        except Exception as e:
+            logger.error("Error posting to CAP dashboard: %s", str(e))
+
     return json.dumps({
         "instruction": "Use the review dashboard OData MCP tool to POST a new ReviewCase record with status=pending_review.",
         "review_case": {

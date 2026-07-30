@@ -1,0 +1,10 @@
+# Requirements for end-to-end testing
+
+# HTTP client for testing
+httpx
+
+# Environment variable management
+python-dotenv
+
+# Async support (usually included with Python 3.7+)
+# asyncio

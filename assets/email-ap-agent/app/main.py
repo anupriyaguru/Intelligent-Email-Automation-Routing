@@ -1,4 +1,15 @@
-# CRITICAL: Initialize telemetry BEFORE importing AI frameworks
+# CRITICAL: Load .env BEFORE initializing AI frameworks
+from pathlib import Path
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+        print(f"Loaded .env from {env_path}")
+except ImportError:
+    pass
+
+# Initialize telemetry AFTER loading .env
 from sap_cloud_sdk.aicore import set_aicore_config
 from sap_cloud_sdk.core.telemetry import auto_instrument
 

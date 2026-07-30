@@ -1,0 +1,124 @@
+{
+  "servers": {
+    "sap-s4hana-ar": {
+      "mcp_server_name": "sap.mcp/accounts_receivable",
+      "description": "MCP server for SAP S/4HANA Accounts Receivable APIs - customer statements, open items, disputes, credit memos",
+      "tools": {
+        "get_customer_statement": {
+          "description": "Retrieve customer account statement",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "customer_id": {
+                "type": "string",
+                "description": "Customer/business partner ID"
+              },
+              "period": {
+                "type": "string",
+                "description": "Statement period (e.g., '2026-07')"
+              }
+            },
+            "required": ["customer_id"]
+          },
+          "mock_response": {
+            "customer_id": "10001234",
+            "customer_name": "ACME Corporation",
+            "statement_date": "2026-07-29",
+            "total_open_amount": "2500.00",
+            "currency": "USD",
+            "open_items": [
+              {
+                "document_number": "1900001234",
+                "document_type": "Invoice",
+                "posting_date": "2026-06-15",
+                "due_date": "2026-07-15",
+                "amount": "2500.00",
+                "status": "Open"
+              }
+            ]
+          }
+        },
+        "get_customer_open_items": {
+          "description": "Get open (unpaid) items for a customer",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "customer_id": {
+                "type": "string",
+                "description": "Customer ID"
+              }
+            },
+            "required": ["customer_id"]
+          },
+          "mock_response": {
+            "customer_id": "10001234",
+            "total_open": "2500.00",
+            "currency": "USD",
+            "items": []
+          }
+        },
+        "create_dispute_case": {
+          "description": "Create a dispute case in SAP",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              },
+              "invoice_number": {
+                "type": "string"
+              },
+              "disputed_amount": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": ["customer_id", "invoice_number"]
+          },
+          "mock_response": {
+            "dispute_case_id": "DISP-2026-001",
+            "status": "created"
+          }
+        }
+      }
+    },
+    "email-connector": {
+      "mcp_server_name": "email.connector/outlook_gmail",
+      "description": "MCP server for email operations",
+      "tools": {
+        "send_email": {
+          "description": "Send an email",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "to": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "channel": {
+                "type": "string"
+              }
+            },
+            "required": ["to", "subject", "body"]
+          },
+          "mock_response": {
+            "status": "sent",
+            "message_id": "MSG-AR-001"
+          }
+        }
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "created_for_agent": "email-ar-agent",
+    "mock_mode": true
+  }
+}

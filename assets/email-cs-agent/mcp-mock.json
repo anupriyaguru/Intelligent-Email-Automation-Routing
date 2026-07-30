@@ -1,0 +1,32 @@
+{
+  "servers": {
+    "crm-customer-service": {
+      "mcp_server_name": "sap.mcp/customer_service",
+      "description": "MCP server for Customer Service - general inquiries, complaints",
+      "tools": {
+        "create_service_ticket": {
+          "description": "Create a customer service ticket",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": ["subject"]
+          },
+          "mock_response": {
+            "ticket_id": "TKT-2026-001",
+            "status": "created"
+          }
+        }
+      }
+    }
+  }
+}

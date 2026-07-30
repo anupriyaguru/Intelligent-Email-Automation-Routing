@@ -1,0 +1,27 @@
+{
+  "servers": {
+    "sap-s4hana-collections": {
+      "mcp_server_name": "sap.mcp/collections",
+      "description": "MCP server for SAP S/4HANA Collections - overdue accounts, payment arrangements",
+      "tools": {
+        "get_overdue_items": {
+          "description": "Get overdue items for a customer",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              }
+            },
+            "required": ["customer_id"]
+          },
+          "mock_response": {
+            "customer_id": "10001234",
+            "total_overdue": "5000.00",
+            "overdue_items": []
+          }
+        }
+      }
+    }
+  }
+}

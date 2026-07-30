@@ -2,6 +2,17 @@
 from sap_cloud_sdk.aicore import set_aicore_config
 from sap_cloud_sdk.core.telemetry import auto_instrument
 
+# Load environment variables from .env file if present
+from pathlib import Path
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+        print(f"Loaded .env from {env_path}")
+except ImportError:
+    pass
+
 set_aicore_config()
 auto_instrument()
 

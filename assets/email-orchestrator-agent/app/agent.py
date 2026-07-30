@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from dataclasses import dataclass
 from typing import AsyncGenerator, Literal, Sequence
@@ -7,11 +8,23 @@ from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import BaseTool
-from langchain_litellm import ChatLiteLLM
 from langgraph.checkpoint.memory import InMemorySaver
 from sap_cloud_sdk.agent_decorators import agent_config, agent_model, prompt_section
 
 logger = logging.getLogger(__name__)
+
+# Check if we should use Mock LLM (separate from IBD_TESTING which is for backend API mocking)
+USE_MOCK_LLM = os.getenv('USE_MOCK_LLM', '0') == '1'
+
+if USE_MOCK_LLM:
+    try:
+        from .mock_llm import MockAICoreChat
+    except ImportError:
+        from mock_llm import MockAICoreChat
+    logger.info("Using Mock LLM for testing")
+else:
+    from langchain_litellm import ChatLiteLLM
+    logger.info("Using real AI Core LLM")
 
 
 @agent_model(
@@ -20,7 +33,7 @@ logger = logging.getLogger(__name__)
     description="The language model powering this agent",
 )
 def get_model_name() -> str:
-    return "sap/anthropic--claude-4.5-sonnet"
+    return "sap/gpt-4o-mini"
 
 
 @agent_config(
@@ -94,7 +107,14 @@ class SampleAgent:
     SUPPORTED_CONTENT_TYPES = ["text", "text/plain"]
 
     def __init__(self):
-        self.llm = ChatLiteLLM(model=get_model_name(), temperature=get_temperature())
+        if USE_MOCK_LLM:
+            self.llm = MockAICoreChat()
+            logger.info("Initialized with Mock LLM")
+        else:
+            from langchain_litellm import ChatLiteLLM
+            self.llm = ChatLiteLLM(model=get_model_name(), temperature=get_temperature())
+            logger.info(f"Initialized with real LLM: {get_model_name()}")
+
         self._checkpointer = InMemorySaver()
         self._last_active: dict[str, float] = {}
         self._summarization_middleware = SummarizationMiddleware(
@@ -122,7 +142,10 @@ class SampleAgent:
             result = await graph.ainvoke({"messages": [HumanMessage(content=query)]}, {"configurable": {"thread_id": context_id}})
             yield {"is_task_complete": True, "require_user_input": False, "content": result["messages"][-1].content}
         except Exception as e:
-            yield {"is_task_complete": True, "require_user_input": False, "content": f"Error: {str(e)}"}
+            import traceback
+            error_msg = f"Error: {type(e).__name__}: {str(e)}\n{traceback.format_exc()}"
+            logger.error("Agent stream error: %s", error_msg)
+            yield {"is_task_complete": True, "require_user_input": False, "content": error_msg}
 
     async def invoke(self, query: str, context_id: str, tools: Sequence[BaseTool] | None = None) -> AgentResponse:
         last: dict = {}

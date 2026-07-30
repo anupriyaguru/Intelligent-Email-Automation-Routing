@@ -1,0 +1,177 @@
+{
+  "servers": {
+    "sap-s4hana-bp": {
+      "mcp_server_name": "sap.mcp/business_partner",
+      "description": "MCP server for SAP S/4HANA Business Partner API - customer and vendor master data",
+      "tools": {
+        "get_business_partner_by_email": {
+          "description": "Find business partner by email address",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "Email address to search"
+              }
+            },
+            "required": ["email"]
+          },
+          "mock_response": {
+            "BusinessPartner": "10001234",
+            "BusinessPartnerName": "ACME Corporation",
+            "BusinessPartnerCategory": "2",
+            "BusinessPartnerType": "Customer",
+            "EmailAddress": "john.doe@acmecorp.com",
+            "found": true,
+            "bp_tier": "standard",
+            "legal_hold_flag": false,
+            "at_risk_flag": false
+          }
+        },
+        "get_business_partner": {
+          "description": "Get business partner details by ID",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "bp_id": {
+                "type": "string",
+                "description": "Business partner ID"
+              }
+            },
+            "required": ["bp_id"]
+          },
+          "mock_response": {
+            "BusinessPartner": "10001234",
+            "BusinessPartnerName": "ACME Corporation",
+            "BusinessPartnerCategory": "2",
+            "BusinessPartnerType": "Customer",
+            "found": true
+          }
+        }
+      }
+    },
+    "knowledge-base": {
+      "mcp_server_name": "hana.mcp/knowledge_base",
+      "description": "MCP server for HANA Cloud vector store - knowledge base queries and storage",
+      "tools": {
+        "query_knowledge_base": {
+          "description": "Query knowledge base for prior interactions and policies",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "bp_id": {
+                "type": "string",
+                "description": "Business partner ID"
+              },
+              "intent_category": {
+                "type": "string",
+                "description": "Email intent category"
+              }
+            },
+            "required": ["bp_id"]
+          },
+          "mock_response": {
+            "prior_cases_summary": "Customer contacted twice in past month regarding statements",
+            "prior_cases": [
+              {
+                "case_id": "CASE-2026-06-15-001",
+                "intent": "statement_request",
+                "resolved_at": "2026-06-15",
+                "resolution": "automated"
+              }
+            ],
+            "policy_rules": [],
+            "preferred_partner_flag": false,
+            "at_risk_flag": false,
+            "legal_hold_flag": false
+          }
+        },
+        "write_case_to_knowledge_base": {
+          "description": "Write resolved case to knowledge base",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "description": "Case ID"
+              },
+              "bp_id": {
+                "type": "string",
+                "description": "Business partner ID"
+              },
+              "intent_category": {
+                "type": "string",
+                "description": "Intent category"
+              },
+              "routing_path": {
+                "type": "string",
+                "description": "Which sub-agent handled"
+              },
+              "response_summary": {
+                "type": "string",
+                "description": "Summary of response"
+              },
+              "resolution_type": {
+                "type": "string",
+                "description": "automated/human_approved/etc"
+              }
+            },
+            "required": ["case_id", "bp_id"]
+          },
+          "mock_response": {
+            "status": "success",
+            "case_id": "CASE-2026-07-29-001",
+            "stored_at": "2026-07-29T10:00:00Z"
+          }
+        }
+      }
+    },
+    "email-connector": {
+      "mcp_server_name": "email.connector/outlook_gmail",
+      "description": "MCP server for email operations - send replies",
+      "tools": {
+        "send_email_reply": {
+          "description": "Send an email reply",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "recipient_email": {
+                "type": "string",
+                "description": "Recipient email"
+              },
+              "subject": {
+                "type": "string",
+                "description": "Email subject"
+              },
+              "body": {
+                "type": "string",
+                "description": "Email body"
+              },
+              "case_id": {
+                "type": "string",
+                "description": "Case ID"
+              },
+              "channel": {
+                "type": "string",
+                "description": "outlook or gmail"
+              }
+            },
+            "required": ["recipient_email", "subject", "body", "case_id", "channel"]
+          },
+          "mock_response": {
+            "status": "sent",
+            "message_id": "MSG-2026-07-29-001",
+            "sent_at": "2026-07-29T10:00:00Z"
+          }
+        }
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "created_for_agent": "email-orchestrator-agent",
+    "mock_mode": true,
+    "total_servers": 3,
+    "total_tools": 5
+  }
+}

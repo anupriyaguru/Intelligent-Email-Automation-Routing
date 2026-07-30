@@ -1,0 +1,27 @@
+{
+  "servers": {
+    "sap-s4hana-treasury": {
+      "mcp_server_name": "sap.mcp/treasury",
+      "description": "MCP server for SAP S/4HANA Treasury - payment terms, financing inquiries",
+      "tools": {
+        "get_payment_terms": {
+          "description": "Get payment terms for a customer",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              }
+            },
+            "required": ["customer_id"]
+          },
+          "mock_response": {
+            "customer_id": "10001234",
+            "payment_terms": "Net 30",
+            "payment_terms_description": "Payment due 30 days after invoice date"
+          }
+        }
+      }
+    }
+  }
+}
