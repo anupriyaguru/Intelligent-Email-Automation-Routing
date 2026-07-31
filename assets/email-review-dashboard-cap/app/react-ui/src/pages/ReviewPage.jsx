@@ -80,7 +80,6 @@ export default function ReviewPage() {
                                 <th>Business Partner</th>
                                 <th>Subject</th>
                                 <th>Intent</th>
-                                <th>Confidence</th>
                                 <th>Reason</th>
                                 <th>Status</th>
                                 <th>Received</th>
@@ -89,7 +88,7 @@ export default function ReviewPage() {
                         </thead>
                         <tbody>
                             {cases.length === 0 && (
-                                <tr><td colSpan={9} style={{textAlign:'center', color:'#888', padding:24}}>No cases found</td></tr>
+                                <tr><td colSpan={8} style={{textAlign:'center', color:'#888', padding:24}}>No cases found</td></tr>
                             )}
                             {cases.map(c => (
                                 <tr key={c.ID}>
@@ -100,11 +99,6 @@ export default function ReviewPage() {
                                     </td>
                                     <td className="truncate">{c.emailSubject}</td>
                                     <td className="text-small">{c.intentCategory?.replace(/_/g,' ')}</td>
-                                    <td>
-                                        <span className={confidenceClass(c.confidenceScore)}>
-                                            {(c.confidenceScore * 100).toFixed(0)}%
-                                        </span>
-                                    </td>
                                     <td className="text-small">{c.flaggedReason?.replace(/_/g,' ')}</td>
                                     <td><span className={`badge ${BADGE_CLASS[c.status] || ''}`}>{c.status?.replace(/_/g,' ')}</span></td>
                                     <td className="text-muted">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ''}</td>
@@ -130,11 +124,6 @@ export default function ReviewPage() {
                             <div><span className="form-label">Business Partner</span>{selected.bpName || selected.bpId}</div>
                             <div><span className="form-label">Sender</span>{selected.senderEmail}</div>
                             <div><span className="form-label">Intent</span>{selected.intentCategory?.replace(/_/g,' ')}</div>
-                            <div><span className="form-label">Confidence</span>
-                                <span className={confidenceClass(selected.confidenceScore)}>
-                                    {(selected.confidenceScore * 100).toFixed(0)}%
-                                </span>
-                            </div>
                             <div><span className="form-label">Flagged Reason</span>{selected.flaggedReason?.replace(/_/g,' ')}</div>
                             <div><span className="form-label">Sub-Agent</span>{selected.subAgent}</div>
                         </div>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Automation & Routing - SAP AI Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: #f7f7f7;
+            min-height: 100vh;
+            color: #32363a;
+        }
+
+        /* SAP Shell Bar - Removed */
+
+        /* Main Content Area */
+        .sap-main-content {
+            background: white;
+            min-height: 100vh;
+        }
+
+        /* Page Header */
+        .sap-page-header {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .sap-page-header-hamburger {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #32363a;
+            gap: 4px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .sap-page-header-hamburger span {
+            width: 18px;
+            height: 2px;
+            background: #32363a;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .sap-page-header-hamburger:hover {
+            background: #f0f0f0;
+        }
+
+        .sap-page-header-logo {
+            flex-shrink: 0;
+        }
+
+        .sap-page-header-logo img {
+            height: 48px;
+            vertical-align: middle;
+        }
+
+        .sap-page-header-content {
+            flex: 1;
+        }
+
+        .sap-page-header h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #32363a;
+            margin-bottom: 0.25rem;
+        }
+
+        .sap-page-header p {
+            font-size: 0.875rem;
+            color: #6a6d70;
+        }
+
+        /* Object Status Badge */
+        .sap-object-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .sap-object-status.success {
+            background: #e5f3e5;
+            color: #107e3e;
+        }
+
+        /* Email Form Section - Collapsible */
+        .sap-email-form-section {
+            background: #fafafa;
+            border-bottom: 1px solid #e5e5e5;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 2rem;
+        }
+
+        .sap-email-form-section.show {
+            max-height: 700px;
+            padding: 2rem;
+        }
+
+        .sap-email-form-container {
+            display: grid;
+            grid-template-columns: 500px 1fr;
+            gap: 3rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sap-email-form-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Flow Section */
+        .sap-flow-section {
+            padding: 2rem;
+            background: white;
+        }
+
+        .sap-flow-title {
+            font-size: 1.125rem;
+            font-weight: 400;
+            color: #32363a;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Message Strip */
+        .sap-message-strip {
+            background: #e5f3ff;
+            border-left: 4px solid #0854a0;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .sap-message-strip-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #0854a0;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Form Elements */
+        .sap-form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .sap-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #32363a;
+            margin-bottom: 0.375rem;
+        }
+
+        .sap-input, .sap-textarea, .sap-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #89919a;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+
+        .sap-input:focus, .sap-textarea:focus, .sap-select:focus {
+            outline: none;
+            border-color: #0854a0;
+            box-shadow: 0 0 0 1px #0854a0;
+        }
+
+        .sap-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .sap-select {
+            cursor: pointer;
+        }
+
+        /* Button */
+        .sap-button {
+            width: 100%;
+            padding: 0.6875rem 1rem;
+            background: #0854a0;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .sap-button:hover {
+            background: #0a5d9f;
+        }
+
+        .sap-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Timeline - Horizontal */
+        .sap-timeline {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .sap-timeline-item {
+            min-width: 280px;
+            max-width: 280px;
+            padding: 1rem;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 0.25rem 0 rgba(0,0,0,0.1);
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sap-timeline-item-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .sap-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: #0854a0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            flex-shrink: 0;
+        }
+
+        .sap-avatar.orchestrator {
+            background: #0854a0;
+        }
+
+        .sap-avatar.ar {
+            background: #107e3e;
+        }
+
+        .sap-avatar.ap {
+            background: #5d36ff;
+        }
+
+        .sap-avatar.treasury {
+            background: #0070f2;
+        }
+
+        .sap-avatar.collections {
+            background: #e9730c;
+        }
+
+        .sap-avatar.cs {
+            background: #d163e6;
+        }
+
+        .sap-avatar.review {
+            background: #bb0000;
+        }
+
+        .sap-avatar.success {
+            background: #107e3e;
+        }
+
+        .sap-timeline-item-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #32363a;
+        }
+
+        .sap-timeline-item-body {
+            font-size: 0.75rem;
+            color: #6a6d70;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+        }
+
+        .sap-timeline-milestone {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0;
+            font-size: 0.7rem;
+            color: #6a6d70;
+        }
+
+        .sap-timeline-milestone.active {
+            color: #0854a0;
+            font-weight: 600;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .sap-status-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.625rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .sap-status-badge.success {
+            background: #e5f3e5;
+            color: #107e3e;
+        }
+
+        .sap-status-badge.warning {
+            background: #fef7f1;
+            color: #e9730c;
+        }
+
+        .sap-status-badge.info {
+            background: #d1efff;
+            color: #0854a0;
+        }
+
+        /* Connector */
+        .sap-connector {
+            width: 1.5rem;
+            height: 2px;
+            background: #d9d9d9;
+            position: relative;
+            flex-shrink: 0;
+            align-self: center;
+            overflow: hidden;
+        }
+
+        .sap-connector::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: -3px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid #d9d9d9;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        .sap-connector.active {
+            background: #0854a0;
+        }
+
+        .sap-connector.active::after {
+            border-left-color: #0854a0;
+        }
+
+        .sap-connector.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255,255,255,0.8) 50%,
+                transparent 100%);
+            animation: flow-right 1.5s ease-in-out infinite;
+        }
+
+        @keyframes flow-right {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 200%;
+            }
+        }
+
+        /* Empty State */
+        .sap-empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6a6d70;
+        }
+
+        .sap-empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Progress Bar */
+        .sap-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e5e5;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .sap-progress-bar-fill {
+            height: 100%;
+            background: #0854a0;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Content -->
+    <div class="sap-main-content">
+        <!-- Page Header -->
+        <div class="sap-page-header">
+            <button class="sap-page-header-hamburger" id="hamburger" onclick="toggleEmailForm()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="sap-page-header-logo">
+                <img src="SAP.jpg" alt="SAP" onerror="this.outerHTML='<div style=\'font-weight:bold;font-size:32px;color:#ffc845;\'>SAP</div>';">
+            </div>
+            <div class="sap-page-header-content">
+                <h1>Business Partner Inquiry Automation <span class="sap-object-status success">AI-Powered</span></h1>
+                <p>Intelligent email processing for Finance & Accounting with multi-agent orchestration</p>
+            </div>
+        </div>
+
+        <!-- Email Form Section (Collapsible) -->
+        <div class="sap-email-form-section" id="emailFormSection">
+            <div class="sap-email-form-container">
+                <div>
+                    <h2 style="font-size: 1.125rem; font-weight: 400; color: #32363a; margin-bottom: 1.5rem;">Submit Email</h2>
+
+                    <div class="sap-message-strip">
+                        <div class="sap-message-strip-title">Quick Scenarios</div>
+                        <select id="scenarioSelect" class="sap-select" onchange="loadScenario()">
+                            <option value="">-- Select a scenario --</option>
+                            <option value="ar_statement">AR: Customer Statement Request</option>
+                            <option value="ap_invoice">AP: Vendor Invoice Status ($15k)</option>
+                            <option value="collections">Collections: Overdue Payment</option>
+                            <option value="treasury">Treasury: Payment Terms Inquiry</option>
+                            <option value="cs_general">CS: General Inquiry</option>
+                        </select>
+                    </div>
+
+                    <form id="emailForm" onsubmit="submitEmail(event)">
+                        <div class="sap-form-group">
+                            <label class="sap-label" for="senderEmail">From Email</label>
+                            <input type="email" id="senderEmail" class="sap-input" required placeholder="sender@company.com">
+                        </div>
+
+                        <div class="sap-form-group">
+                            <label class="sap-label" for="subject">Subject</label>
+                            <input type="text" id="subject" class="sap-input" required placeholder="Email subject">
+                        </div>
+
+                        <div class="sap-form-group">
+                            <label class="sap-label" for="body">Email Body</label>
+                            <textarea id="body" class="sap-textarea" required placeholder="Email message content..."></textarea>
+                        </div>
+
+                        <button type="submit" class="sap-button" id="submitBtn">
+                            Process Email
+                        </button>
+                    </form>
+                </div>
+                <div style="padding-left: 2rem; border-left: 1px solid #e5e5e5;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #32363a; margin-bottom: 1rem;">How it Works</h3>
+                    <div style="font-size: 0.875rem; color: #6a6d70; line-height: 1.6;">
+                        <p style="margin-bottom: 0.75rem;"><strong>1. Email Classification</strong> - AI identifies the intent and category</p>
+                        <p style="margin-bottom: 0.75rem;"><strong>2. Smart Routing</strong> - Directed to specialized agent (AR, AP, CS, etc.)</p>
+                        <p style="margin-bottom: 0.75rem;"><strong>3. SAP Integration</strong> - Real-time data retrieval and validation</p>
+                        <p style="margin-bottom: 0.75rem;"><strong>4. Quality Review</strong> - Automated checks or human review when needed</p>
+                        <p style="margin-bottom: 0.75rem;"><strong>5. Response</strong> - Auto-send or flagged for approval</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Flow Visualization -->
+        <div class="sap-flow-section">
+            <h2 class="sap-flow-title">Agent Communication Flow</h2>
+            <div class="sap-progress-bar" id="progressBar" style="display: none;">
+                <div class="sap-progress-bar-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+            <div id="agentFlow" class="sap-timeline">
+                <!-- Empty state -->
+                <div class="sap-empty-state">
+                    <div class="sap-empty-state-icon">📧</div>
+                    <p>Submit an email to see the agent communication flow</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = {
+            ar_statement: {
+                sender: 'john.doe@acmecorp.com',
+                subject: 'Request Account Statement July 2026',
+                body: 'Dear AR Team,\n\nCould you please send me our account statement for July 2026?\nWe need this for our monthly reconciliation.\n\nCustomer ID: 10001234\nCompany: ACME Corporation\n\nThank you,\nJohn Doe'
+            },
+            ap_invoice: {
+                sender: 'vendor@supplierco.com',
+                subject: 'Invoice Status Inquiry - INV-2026-12345',
+                body: 'Hello AP Team,\n\nCould you please provide the status of invoice INV-2026-12345 for $15,000?\n\nWe submitted this invoice against PO-98765 on July 15th and haven\'t received payment yet.\n\nBest regards,\nSupplier Co'
+            },
+            collections: {
+                sender: 'accounts@delinquentco.com',
+                subject: 'Past Due Balance - Payment Arrangement Request',
+                body: 'Dear Collections Team,\n\nWe have a past due balance of $8,500 and would like to arrange a payment plan.\n\nCould we split this into 3 monthly installments?\n\nThank you'
+            },
+            treasury: {
+                sender: 'finance@partnerco.com',
+                subject: 'Payment Terms Inquiry',
+                body: 'Hello,\n\nWe are a new customer and would like to know what payment terms are available.\n\nCan we get Net 60 terms?\n\nThanks'
+            },
+            cs_general: {
+                sender: 'contact@newcustomer.com',
+                subject: 'General Product Inquiry',
+                body: 'Hi,\n\nI have a question about your products and pricing.\n\nCan someone from your team contact me?\n\nThanks'
+            }
+        };
+
+        function toggleEmailForm() {
+            const section = document.getElementById('emailFormSection');
+            section.classList.toggle('show');
+        }
+
+        function loadScenario() {
+            const select = document.getElementById('scenarioSelect');
+            const scenario = scenarios[select.value];
+            if (scenario) {
+                document.getElementById('senderEmail').value = scenario.sender;
+                document.getElementById('subject').value = scenario.subject;
+                document.getElementById('body').value = scenario.body;
+            }
+        }
+
+        function submitEmail(event) {
+            event.preventDefault();
+
+            const sender = document.getElementById('senderEmail').value;
+            const subject = document.getElementById('subject').value;
+            const body = document.getElementById('body').value;
+
+            // Auto-collapse form after submission
+            setTimeout(() => {
+                const section = document.getElementById('emailFormSection');
+                section.classList.remove('show');
+            }, 500);
+
+            // Clear existing flow
+            const flowContainer = document.getElementById('agentFlow');
+            flowContainer.innerHTML = '';
+
+            // Show progress bar
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.display = 'block';
+
+            // Disable submit button
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            simulateEmailProcessing(sender, subject, body);
+        }
+
+        async function simulateEmailProcessing(sender, subject, body) {
+            const flowDiv = document.getElementById('agentFlow');
+            flowDiv.innerHTML = '';
+
+            let targetAgent = 'AR';
+            let requiresReview = false;
+            let confidenceScore = 0.95;
+
+            if (subject.toLowerCase().includes('invoice') || body.toLowerCase().includes('vendor')) {
+                targetAgent = 'AP';
+            }
+            if (body.includes('$15,000') || body.includes('$8,500')) {
+                requiresReview = true;
+                confidenceScore = 0.72;
+            }
+            if (subject.toLowerCase().includes('overdue') || subject.toLowerCase().includes('past due')) {
+                targetAgent = 'Collections';
+                confidenceScore = 0.68;
+            }
+            if (subject.toLowerCase().includes('payment terms')) {
+                targetAgent = 'Treasury';
+                confidenceScore = 0.88;
+            }
+            if (subject.toLowerCase().includes('product') || subject.toLowerCase().includes('general')) {
+                targetAgent = 'CS';
+                confidenceScore = 0.91;
+            }
+
+            await showOrchestratorProcessing(sender, subject, targetAgent);
+            await sleep(1000);
+
+            await showSubAgentProcessing(targetAgent);
+            await sleep(1500);
+
+            await showResult(targetAgent, requiresReview);
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Process Email';
+            document.getElementById('progressBar').style.display = 'none';
+        }
+
+        async function showOrchestratorProcessing(sender, subject, targetAgent) {
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = '20%';
+
+            const orchestratorHTML = `
+                <div class="sap-timeline-item" id="orchestrator">
+                    <div class="sap-timeline-item-header">
+                        <div class="sap-avatar orchestrator">OR</div>
+                        <div>
+                            <div class="sap-timeline-item-title">Orchestrator Agent</div>
+                        </div>
+                    </div>
+                    <div class="sap-timeline-item-body">
+                        <strong>Email Received:</strong><br>
+                        From: ${sender}<br>
+                        Subject: ${subject}
+                    </div>
+                    <div id="milestones"></div>
+                    <div class="sap-status-badge info">Processing</div>
+                </div>
+            `;
+            document.getElementById('agentFlow').innerHTML = orchestratorHTML;
+
+            const milestones = [
+                'Email classified',
+                'Knowledge base queried',
+                'Business partner identified',
+                `Routing to ${targetAgent} Agent`
+            ];
+
+            for (let i = 0; i < milestones.length; i++) {
+                await sleep(600);
+                const milestoneDiv = document.getElementById('milestones');
+                milestoneDiv.innerHTML += `<div class="sap-timeline-milestone">✓ ${milestones[i]}</div>`;
+            }
+
+            await sleep(500);
+            document.getElementById('orchestrator').querySelector('.sap-status-badge').className = 'sap-status-badge success';
+            document.getElementById('orchestrator').querySelector('.sap-status-badge').innerHTML = 'Completed';
+
+            progressFill.style.width = '50%';
+        }
+
+        async function showSubAgentProcessing(agentType) {
+            const agentIcons = {
+                'AR': { icon: 'AR', class: 'ar', name: 'Accounts Receivable Agent', port: '5001' },
+                'AP': { icon: 'AP', class: 'ap', name: 'Accounts Payable Agent', port: '5002' },
+                'Treasury': { icon: 'TR', class: 'treasury', name: 'Treasury Agent', port: '5003' },
+                'Collections': { icon: 'CO', class: 'collections', name: 'Collections Agent', port: '5004' },
+                'CS': { icon: 'CS', class: 'cs', name: 'Customer Service Agent', port: '5005' }
+            };
+
+            const agent = agentIcons[agentType];
+
+            const connectorHTML = '<div class="sap-connector active"></div>';
+            document.getElementById('agentFlow').innerHTML += connectorHTML;
+
+            await sleep(300);
+
+            const subAgentHTML = `
+                <div class="sap-timeline-item" id="subagent">
+                    <div class="sap-timeline-item-header">
+                        <div class="sap-avatar ${agent.class}">${agent.icon}</div>
+                        <div>
+                            <div class="sap-timeline-item-title">${agent.name}</div>
+                        </div>
+                    </div>
+                    <div class="sap-timeline-item-body">
+                        Port ${agent.port} - A2A Protocol
+                    </div>
+                    <div class="sap-timeline-milestone active">⏳ Retrieving SAP data</div>
+                    <div class="sap-timeline-milestone">Drafting response</div>
+                    <div class="sap-timeline-milestone">Calculating confidence</div>
+                    <div class="sap-status-badge info">Processing</div>
+                </div>
+            `;
+            document.getElementById('agentFlow').innerHTML += subAgentHTML;
+
+            await sleep(800);
+            document.querySelectorAll('#subagent .sap-timeline-milestone')[0].classList.remove('active');
+            document.querySelectorAll('#subagent .sap-timeline-milestone')[1].classList.add('active');
+            document.querySelectorAll('#subagent .sap-timeline-milestone')[1].innerHTML = '⏳ Drafting response';
+
+            await sleep(700);
+            document.querySelectorAll('#subagent .sap-timeline-milestone')[1].classList.remove('active');
+            document.querySelectorAll('#subagent .sap-timeline-milestone')[2].classList.add('active');
+            document.querySelectorAll('#subagent .sap-timeline-milestone')[2].innerHTML = '⏳ Calculating confidence';
+
+            await sleep(500);
+            document.querySelectorAll('#subagent .sap-timeline-milestone').forEach(m => {
+                m.classList.remove('active');
+                m.innerHTML = '✓ ' + m.innerHTML.replace('⏳ ', '');
+            });
+
+            document.getElementById('subagent').querySelector('.sap-status-badge').className = 'sap-status-badge success';
+            document.getElementById('subagent').querySelector('.sap-status-badge').textContent = 'Completed';
+
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = '80%';
+        }
+
+        async function showResult(agentType, requiresReview) {
+            const responses = {
+                'AR': `Dear Customer,
+
+Thank you for your inquiry. Your account statement for July 2026 has been generated and is attached to this email.
+
+Current Balance: $12,450.00
+Last Payment: $5,000.00 on July 15, 2026
+
+If you have any questions, please don't hesitate to contact us.
+
+Best regards,
+AR Team`,
+                'AP': `Dear Vendor,
+
+Thank you for your inquiry regarding Invoice INV-2026-12345.
+
+Invoice Amount: $15,000.00
+Status: Pending Approval
+Expected Payment Date: August 15, 2026
+
+The invoice is currently in our approval workflow. Once approved, payment will be processed according to Net 30 terms.
+
+Best regards,
+AP Team`,
+                'Treasury': `Dear Partner,
+
+Thank you for your inquiry about payment terms.
+
+For new customers, we offer the following standard terms:
+- Net 30 days
+- 2% discount for payment within 10 days
+
+Net 60 terms are available subject to credit review and approval. Please submit your company's financial statements for evaluation.
+
+Best regards,
+Treasury Team`,
+                'Collections': `Dear Customer,
+
+Thank you for reaching out regarding your past due balance of $8,500.
+
+We can offer a payment plan with the following terms:
+- 3 monthly installments of $2,833.33
+- First payment due within 7 days
+- Remaining payments due on the 1st of each month
+
+Please confirm your acceptance to proceed.
+
+Best regards,
+Collections Team`,
+                'CS': `Dear Customer,
+
+Thank you for contacting us. We've created a service ticket (TKT-2026-001) for your inquiry.
+
+A customer service representative will contact you within 24 hours to discuss your product questions and provide detailed pricing information.
+
+Best regards,
+Customer Service Team`
+            };
+
+            const connectorHTML = '<div class="sap-connector"></div>';
+            document.getElementById('agentFlow').innerHTML += connectorHTML;
+
+            await sleep(300);
+
+            if (requiresReview) {
+                const caseData = {
+                    caseId: `CASE-${Date.now()}`,
+                    senderEmail: document.getElementById('senderEmail').value,
+                    emailSubject: document.getElementById('subject').value,
+                    emailBody: document.getElementById('body').value,
+                    intentCategory: agentType.toLowerCase() === 'ap' ? 'vendor_invoice_status' :
+                                    agentType.toLowerCase() === 'ar' ? 'statement_request' : 'general_inquiry',
+                    confidenceScore: 0.72,
+                    flaggedReason: 'high_value',
+                    draftResponse: responses[agentType],
+                    subAgent: `email-${agentType.toLowerCase()}-agent`,
+                    bpId: '10001234',
+                    bpName: agentType === 'AP' ? 'Supplier Co' : 'ACME Corporation'
+                };
+
+                fetch('http://localhost:4004/api/review/ReviewCases', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(caseData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Case submitted to Review Dashboard:', data);
+                    const resultHTML = `
+                        <div class="sap-timeline-item" style="max-width: 400px; background: #fef7f1;">
+                            <div class="sap-timeline-item-header">
+                                <div class="sap-avatar review">!</div>
+                                <div>
+                                    <div class="sap-timeline-item-title">Review Required</div>
+                                </div>
+                            </div>
+                            <div class="sap-timeline-item-body">
+                                <strong>Reason:</strong> High value detected (&gt; $5,000)<br>
+                                <strong>Case ID:</strong> ${caseData.caseId}<br>
+                                <strong>Action:</strong> Sent to Review Dashboard<br><br>
+                                <div style="background: white; padding: 0.75rem; border-radius: 0.25rem; font-size: 0.7rem; max-height: 150px; overflow-y: auto;">
+                                    <strong>Draft Response:</strong><br>
+                                    <pre style="white-space: pre-wrap; font-size: 0.7rem; margin-top: 0.5rem;">${responses[agentType]}</pre>
+                                </div>
+                            </div>
+                            <div class="sap-timeline-milestone">✓ Case stored in knowledge base</div>
+                            <div class="sap-status-badge warning">Pending Approval</div>
+                            <br>
+                            <a href="http://localhost:4004" target="_blank" style="display: inline-block; background: #0854a0; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; font-size: 0.75rem; margin-top: 0.5rem;">
+                                View in Dashboard →
+                            </a>
+                        </div>
+                    `;
+                    document.getElementById('agentFlow').innerHTML += resultHTML;
+                })
+                .catch(error => {
+                    console.error('Error submitting to Review Dashboard:', error);
+                    const resultHTML = `
+                        <div class="sap-timeline-item" style="max-width: 400px; background: #fef7f1;">
+                            <div class="sap-timeline-item-header">
+                                <div class="sap-avatar review">!</div>
+                                <div>
+                                    <div class="sap-timeline-item-title">Review Required</div>
+                                </div>
+                            </div>
+                            <div class="sap-timeline-item-body">
+                                <strong>Reason:</strong> High value detected (&gt; $5,000)<br>
+                                <strong>Action:</strong> Flagged for review<br>
+                                <strong>Note:</strong> Dashboard not available<br>
+                                <code style="font-size: 0.65rem;">cd assets/email-review-dashboard-cap && node server.js</code><br><br>
+                                <div style="background: white; padding: 0.75rem; border-radius: 0.25rem; font-size: 0.7rem; max-height: 150px; overflow-y: auto;">
+                                    <strong>Draft Response:</strong><br>
+                                    <pre style="white-space: pre-wrap; font-size: 0.7rem; margin-top: 0.5rem;">${responses[agentType]}</pre>
+                                </div>
+                            </div>
+                            <div class="sap-timeline-milestone">✓ Case stored in knowledge base</div>
+                            <div class="sap-status-badge warning">Pending Approval</div>
+                        </div>
+                    `;
+                    document.getElementById('agentFlow').innerHTML += resultHTML;
+                });
+            } else {
+                const resultHTML = `
+                    <div class="sap-timeline-item" style="max-width: 400px; background: #e5f3e5;">
+                        <div class="sap-timeline-item-header">
+                            <div class="sap-avatar success">✓</div>
+                            <div>
+                                <div class="sap-timeline-item-title">Auto-Replied</div>
+                            </div>
+                        </div>
+                        <div class="sap-timeline-item-body">
+                            <strong>Confidence:</strong> 95%<br>
+                            <strong>Action:</strong> Email sent to customer<br>
+                            <strong>Status:</strong> Case resolved automatically<br><br>
+                            <div style="background: white; padding: 0.75rem; border-radius: 0.25rem; font-size: 0.7rem; max-height: 150px; overflow-y: auto;">
+                                <strong>Email Response Sent:</strong><br>
+                                <pre style="white-space: pre-wrap; font-size: 0.7rem; margin-top: 0.5rem;">${responses[agentType]}</pre>
+                            </div>
+                        </div>
+                        <div class="sap-timeline-milestone">✓ Case stored in knowledge base</div>
+                        <div class="sap-status-badge success">Completed</div>
+                    </div>
+                `;
+                document.getElementById('agentFlow').innerHTML += resultHTML;
+            }
+
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = '100%';
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+
+</body>
+</html>
