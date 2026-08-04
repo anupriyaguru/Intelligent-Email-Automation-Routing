@@ -2,47 +2,10 @@
   "name": "email-review-dashboard-cap",
   "version": "1.0.0",
   "dependencies": {
-    "@cap-js/hana": "^2",
-    "@sap/cds": "^9",
-    "@sap/xssec": "^4",
-    "sql.js": "^1.14.1"
-  },
-  "devDependencies": {
-    "@cap-js/cds-test": "^1.0.1",
-    "@cap-js/sqlite": "^2.4",
-    "@sap/cds-dk": "^10.0.3",
-    "jest": "^30.4.2"
+    "express": "^4.18.2"
   },
   "scripts": {
-    "start": "cds-serve",
-    "build": "npm run build --workspace=app/react-ui && cds build --production",
-    "test": "./node_modules/.bin/jest --forceExit --coverage"
+    "start": "node server.js"
   },
-  "private": true,
-  "cds": {
-    "[development]": {
-      "requires": {
-        "auth": "dummy"
-      }
-    },
-    "[production]": {
-      "folders": {
-        "app": "app/react-ui/dist"
-      }
-    }
-  },
-  "workspaces": [
-    "app/react-ui",
-    "app/react-ui"
-  ],
-  "jest": {
-    "reporters": [
-      "default",
-      "<rootDir>/scripts/test-report-reporter.cjs"
-    ],
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "testEnvironment": "node",
-    "forceExit": true
-  }
+  "private": true
 }
