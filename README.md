@@ -1,4 +1,4 @@
-# 📧 Intelligent Email Automation & Routing
+#  Intelligent Email Automation & Routing
 
 **Multi-Agent AI System for Automated Email Processing and Response Generation**
 
@@ -6,7 +6,7 @@ A production-ready intelligent email automation platform that uses multiple spec
 
 ---
 
-## 🚀 Quick Start - Local Setup
+##  Quick Start - Local Setup
 
 ### Prerequisites
 
@@ -30,7 +30,7 @@ Before you begin, ensure you have the following installed:
 
 ---
 
-## 📋 Setup Instructions
+##  Setup Instructions
 
 ### Step 1: Start All Agents
 
@@ -166,7 +166,7 @@ http://localhost:4004
 
 ---
 
-## 🎯 How to Use the System
+##  How to Use the System
 
 ### **Option A: Using the Demo UI** (`bp_inquiry_automation.html`)
 
@@ -209,7 +209,7 @@ curl -X POST http://localhost:5000/process \
 
 ---
 
-## 🛑 Stopping the Services
+##  Stopping the Services
 
 ### Stop All Agents
 
@@ -227,252 +227,3 @@ stop_agents.bat
 Press `Ctrl+C` in the dashboard command window, or simply close the window.
 
 ---
-
-## 📂 Project Structure
-
-```
-Intelligent Email Automation & Routing/
-├── start_agents.bat              # Start all services
-├── start_dashboard.bat            # Start dashboard only
-├── stop_agents.bat                # Stop all services
-├── bp_inquiry_automation.html     # Demo UI
-├── README.md                      # This file
-│
-├── assets/
-│   ├── email-orchestrator-agent/  # Main coordinator (Port 5000)
-│   ├── email-ar-agent/            # AR specialist (Port 5001)
-│   ├── email-ap-agent/            # AP specialist (Port 5002)
-│   ├── email-treasury-agent/      # Treasury specialist (Port 5003)
-│   ├── email-collections-agent/   # Collections specialist (Port 5004)
-│   ├── email-cs-agent/            # CS specialist (Port 5005)
-│   └── email-review-dashboard-cap/# Review dashboard (Port 4004)
-│
-└── logs/                          # Service logs (auto-created)
-    ├── orchestrator.log
-    ├── ar-agent.log
-    ├── ap-agent.log
-    ├── treasury-agent.log
-    ├── collections-agent.log
-    ├── cs-agent.log
-    └── dashboard.log
-```
-
----
-
-## 🔍 Troubleshooting
-
-### Problem: "Node.js is not installed"
-
-**Solution:**
-1. Download Node.js from https://nodejs.org/
-2. Install with default settings
-3. Restart your computer
-4. Run `start_dashboard.bat` again
-
----
-
-### Problem: "Python is not installed" or "python not recognized"
-
-**Solution:**
-1. Download Python from https://www.python.org/downloads/
-2. During installation, **check "Add Python to PATH"**
-3. Restart your computer
-4. Verify: Open command prompt, type `python --version`
-
----
-
-### Problem: Port already in use
-
-**Error message:** `Address already in use` or `Port 5000 is already allocated`
-
-**Solution:**
-1. Run `stop_agents.bat` to clean up
-2. Close any applications using ports 4004, 5000-5005
-3. Run `start_agents.bat` again
-
-**Manual cleanup (Windows):**
-```bash
-# Find and kill process on port 5000
-netstat -ano | findstr :5000
-taskkill /PID <PID_NUMBER> /F
-```
-
----
-
-### Problem: Dashboard shows blank page
-
-**Solution:**
-1. Check if server is running: `http://localhost:4004/api/review/ReviewCases`
-2. If you see JSON data, the server is working
-3. Clear browser cache (Ctrl+Shift+Delete)
-4. Try a different browser
-
----
-
-### Problem: Agents not responding
-
-**Solution:**
-1. Check logs in `logs/` directory
-2. Look for error messages
-3. Ensure all dependencies are installed
-4. Restart all services: `stop_agents.bat` then `start_agents.bat`
-
----
-
-### Problem: Demo UI not loading emails
-
-**Solution:**
-1. Ensure `start_agents.bat` is running (all 7 services)
-2. Check browser console for errors (F12 → Console tab)
-3. Verify orchestrator is running: `http://localhost:5000/.well-known/agent.json`
-4. Check if testing mode is enabled: Look for `IBD_TESTING=1` in `start_agents.bat`
-
----
-
-## 🎓 Understanding the System
-
-### **The 7 Services**
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| **Orchestrator Agent** | 5000 | Coordinates entire workflow, routes to specialists |
-| **AR Sub-Agent** | 5001 | Handles Accounts Receivable (invoices, payments) |
-| **AP Sub-Agent** | 5002 | Handles Accounts Payable (vendor invoices, POs) |
-| **Treasury Sub-Agent** | 5003 | Handles Treasury & banking operations |
-| **Collections Sub-Agent** | 5004 | Handles Collections & overdue payments |
-| **CS Sub-Agent** | 5005 | Handles Customer Service inquiries |
-| **Review Dashboard** | 4004 | Human review interface for flagged cases |
-
-### **Workflow Steps**
-
-1. **Email Ingestion** → Orchestrator receives email
-2. **Intent Classification** → AI classifies email category
-3. **BP Identification** → Looks up sender in SAP master data
-4. **Knowledge Base Query** → Retrieves context and history
-5. **Completeness Check** → Validates required information
-6. **Routing** → Delegates to appropriate sub-agent
-7. **Response Generation** → Sub-agent drafts response
-8. **Review Decision** → Auto-send or flag for human review
-9. **Email Dispatch** → Sends response to sender
-10. **KB Update** → Stores case for future learning
-
-### **When Cases Are Flagged for Review**
-
-- Confidence score < 75%
-- Financial action > $5,000
-- Unknown business partner
-- Legal hold on account
-- Sub-agent failure
-
----
-
-## 📊 API Endpoints
-
-### Orchestrator Agent (Port 5000)
-```
-POST /process                      # Process incoming email
-GET  /.well-known/agent.json       # Agent metadata
-GET  /health                        # Health check
-```
-
-### Review Dashboard (Port 4004)
-```
-GET    /api/review/ReviewCases              # List all cases
-POST   /api/review/ReviewCases              # Create new case
-GET    /api/review/ReviewCases/:id          # Get case details
-PATCH  /api/review/ReviewCases/:id          # Update case
-POST   /api/review/ReviewCases/:id/approveCase  # Approve case
-POST   /api/review/ReviewCases/:id/rejectCase   # Reject case
-```
-
----
-
-## 🔐 Configuration
-
-### Environment Variables
-
-Set in `start_agents.bat`:
-
-```bash
-set IBD_TESTING=1           # Enable mock mode (no real SAP calls)
-set USE_MOCK_LLM=0          # Use real LLM (0) or mock LLM (1)
-```
-
-### Financial Threshold
-
-Edit in `assets/email-orchestrator-agent/app/tools.py`:
-
-```python
-FINANCIAL_ACTION_THRESHOLD = 5000.00  # Adjust as needed
-```
-
-### Confidence Threshold
-
-Edit in `assets/email-orchestrator-agent/app/agent.py`:
-
-```python
-CONFIDENCE_THRESHOLD = 0.75  # Adjust as needed (0.0 - 1.0)
-```
-
----
-
-## 📞 Support
-
-### Checking Logs
-
-All service logs are stored in the `logs/` directory:
-
-```bash
-# View orchestrator logs
-type logs\orchestrator.log
-
-# View dashboard logs
-type logs\dashboard.log
-```
-
-### Common Issues
-
-1. **Port conflicts**: Use `stop_agents.bat` to clean up
-2. **Missing dependencies**: Run `npm install` in dashboard directory
-3. **Python errors**: Check Python version and dependencies
-4. **Connection refused**: Ensure services are running (`start_agents.bat`)
-
----
-
-## 🎉 Success Indicators
-
-You know the system is working when:
-
-✅ All 7 services show "UP" status after running `start_agents.bat`  
-✅ Demo UI loads and shows the email form  
-✅ Dashboard loads at `http://localhost:4004`  
-✅ Submitting an email in the UI shows the workflow timeline  
-✅ Logs appear in the `logs/` directory  
-
----
-
-## 📚 Additional Resources
-
-- **Dashboard README**: `assets/email-review-dashboard-cap/README.md`
-- **Agent Specifications**: `specification/` directory
-- **Test Files**: Each agent has a `tests/` directory
-
----
-
-## 🏁 Next Steps
-
-Once the system is running:
-
-1. **Try different email scenarios** (payment inquiry, invoice request, etc.)
-2. **Watch the agent workflow** in the demo UI
-3. **Review flagged cases** in the dashboard
-4. **Check the logs** to understand agent decisions
-5. **Experiment with different intents** to see routing behavior
-
----
-
-**Enjoy your intelligent email automation system!** 🚀
-
----
-
-*For technical details and architecture overview, see the inline documentation in each agent's `app/` directory.*

@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide
+#  Quick Start Guide
 
 **Get the Email Automation System running in 3 minutes!**
 
@@ -13,7 +13,7 @@ After installation, **restart your computer**.
 
 ---
 
-## 🎯 3 Simple Steps
+##  3 Simple Steps
 
 ### Step 1: Start All Agents
 
@@ -54,7 +54,7 @@ It will open in your browser.
 
 ---
 
-## 🎛️ Access the Dashboard
+##  Access the Dashboard
 
 Open your browser and go to:
 
@@ -66,7 +66,7 @@ View and approve/reject AI-generated responses.
 
 ---
 
-## 🛑 Stop Everything
+##  Stop Everything
 
 ```bash
 stop_agents.bat
@@ -74,7 +74,7 @@ stop_agents.bat
 
 ---
 
-## 🆘 Troubleshooting
+##  Troubleshooting
 
 **Services won't start?**
 - Make sure Node.js and Python are installed
@@ -93,7 +93,7 @@ stop_agents.bat
 
 ---
 
-## 📊 What's Running?
+##  What's Running?
 
 | Service | Port | What It Does |
 |---------|------|-------------|
@@ -107,12 +107,3 @@ stop_agents.bat
 
 ---
 
-## ✨ That's It!
-
-You now have a fully functional multi-agent AI email automation system running locally.
-
-For detailed documentation, see **README.md**.
-
----
-
-**Enjoy!** 🎉
